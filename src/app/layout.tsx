@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     ...(shareImage ? { images: [shareImage] } : {}),
   },
 };
-export const viewport: Viewport = { themeColor: "#f6f5f0" };
+export const viewport: Viewport = { themeColor: "#f7f4ec" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

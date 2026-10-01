@@ -5,7 +5,7 @@ export function OrbitArt() {
       role="img"
       aria-label="小売・データ・インフルエンスという3つの視点が、ひとつの球体を囲むグラフィック"
     >
-      <div className="orbit-window relative aspect-[.93] overflow-hidden rounded-t-[48%] rounded-b-2xl bg-blue">
+      <div className="orbit-window relative aspect-[.93] overflow-hidden rounded-t-[48%] rounded-b-2xl bg-accent">
         <svg
           viewBox="0 0 600 650"
           className="absolute inset-0 size-full"
@@ -13,14 +13,18 @@ export function OrbitArt() {
         >
           <defs>
             <radialGradient id="orb-sphere" cx="28%" cy="23%" r="80%">
-              <stop stopColor="#fffef6" />
-              <stop offset=".34" stopColor="#e5eeff" />
-              <stop offset=".7" stopColor="#85a4ee" />
-              <stop offset="1" stopColor="#1437b3" />
+              <stop stopColor="var(--color-orb-light)" />
+              <stop offset=".34" stopColor="var(--color-orb-cream)" />
+              <stop offset=".7" stopColor="var(--color-orb-sage)" />
+              <stop offset="1" stopColor="var(--color-orb-deep)" />
             </radialGradient>
             <radialGradient id="orb-glow">
-              <stop stopColor="#7a9bff" stopOpacity=".6" />
-              <stop offset="1" stopColor="#2850e8" stopOpacity="0" />
+              <stop stopColor="var(--color-orb-glow)" stopOpacity=".6" />
+              <stop
+                offset="1"
+                stopColor="var(--color-accent)"
+                stopOpacity="0"
+              />
             </radialGradient>
             <filter id="orb-shadow">
               <feGaussianBlur stdDeviation="18" />
@@ -29,7 +33,7 @@ export function OrbitArt() {
           <path
             d="M0 130H600M0 260H600M0 390H600M0 520H600M120 0V650M240 0V650M360 0V650M480 0V650"
             stroke="white"
-            strokeOpacity=".08"
+            strokeOpacity=".045"
           />
           <circle cx="300" cy="320" r="290" fill="url(#orb-glow)" />
           <ellipse
@@ -37,7 +41,7 @@ export function OrbitArt() {
             cy="521"
             rx="132"
             ry="21"
-            fill="#071858"
+            fill="var(--color-ink)"
             opacity=".3"
             filter="url(#orb-shadow)"
           />
@@ -48,10 +52,10 @@ export function OrbitArt() {
             ry="92"
             transform="rotate(-35 300 315)"
             fill="none"
-            stroke="#dae6ff"
+            stroke="var(--color-highlight)"
             strokeOpacity=".5"
           />
-          <circle cx="300" cy="315" r="157" fill="url(#orb-sphere)" />
+          <circle cx="300" cy="315" r="163" fill="url(#orb-sphere)" />
           <ellipse
             cx="300"
             cy="315"
@@ -59,23 +63,23 @@ export function OrbitArt() {
             ry="230"
             transform="rotate(30 300 315)"
             fill="none"
-            stroke="#dbe4ff"
+            stroke="var(--color-highlight)"
             strokeOpacity=".45"
           />
           <path
             d="M89 463C131 510 257 479 380 388S568 215 511 166"
             fill="none"
-            stroke="#f5f4ef"
+            stroke="var(--color-paper)"
             strokeWidth="1.6"
           />
           <g className="orbit-satellite">
-            <circle cx="470" cy="211" r="9" fill="#e0f4af" />
+            <circle cx="470" cy="211" r="9" fill="var(--color-highlight)" />
             <circle
               cx="470"
               cy="211"
               r="17"
               fill="none"
-              stroke="#e0f4af"
+              stroke="var(--color-highlight)"
               strokeOpacity=".4"
             />
           </g>
@@ -90,19 +94,19 @@ export function OrbitArt() {
         </span>
       </div>
       <span className="orbit-tag left-0 top-[25%] lg:-left-5">
-        <span className="size-2 rounded-full bg-blue" />
+        <span className="size-2 rounded-full bg-accent" />
         RETAIL
       </span>
       <span className="orbit-tag right-0 top-[51%] lg:-right-5">
-        <span className="size-2 rounded-full bg-blue" />
+        <span className="size-2 rounded-full bg-accent" />
         DATA
       </span>
       <span className="orbit-tag bottom-[17%] left-0 lg:-left-4">
-        <span className="size-2 rounded-full bg-blue" />
+        <span className="size-2 rounded-full bg-accent" />
         INFLUENCE
       </span>
       <span
-        className="absolute right-4 top-5 font-serif text-[3.5rem] italic text-blue md:right-1"
+        className="absolute right-4 top-5 font-serif text-[3.5rem] italic text-accent md:right-1"
         aria-hidden="true"
       >
         ✳

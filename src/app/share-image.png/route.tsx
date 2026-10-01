@@ -11,8 +11,8 @@ export function GET() {
         flexDirection: "column",
         justifyContent: "space-between",
         padding: "64px 76px",
-        background: "#f6f5f0",
-        color: "#232822",
+        background: "#f7f4ec",
+        color: "#203b32",
       }}
     >
       <div
@@ -23,7 +23,7 @@ export function GET() {
         }}
       >
         <span style={{ fontSize: 46 }}>yuka.</span>
-        <span style={{ fontSize: 18, color: "#234ce3" }}>
+        <span style={{ fontSize: 18, color: "#245346" }}>
           PEOPLE, DATA & STORIES
         </span>
       </div>
@@ -37,7 +37,7 @@ export function GET() {
         }}
       >
         <span>Different perspectives.</span>
-        <span style={{ color: "#234ce3" }}>New possibilities.</span>
+        <span style={{ color: "#245346" }}>New possibilities.</span>
       </div>
       <div style={{ fontSize: 21, display: "flex" }}>
         Retail / Digital analysis / Influencer marketing

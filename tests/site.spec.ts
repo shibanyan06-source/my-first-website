@@ -140,3 +140,172 @@ test("core profile and FAQ remain available without JavaScript", async ({
   await expect(page.locator("details[open]")).toContainText("小売");
   await context.close();
 });
+
+test("reading position follows navigation without covering the section heading", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const navigation = page.getByRole("navigation", {
+    name: "メインナビゲーション",
+    exact: true,
+  });
+  await navigation
+    .getByRole("link", { name: "Experience", exact: true })
+    .click();
+  await expect(
+    navigation.getByRole("link", { name: "Experience", exact: true }),
+  ).toHaveAttribute("aria-current", "location");
+  const heading = await page.locator("#experience-title").boundingBox();
+  const header = await page.locator("header").boundingBox();
+  expect(heading!.y).toBeGreaterThan(header!.y + header!.height);
+  await navigation.getByRole("link", { name: "Contact", exact: true }).click();
+  await expect(
+    navigation.getByRole("link", { name: "Contact", exact: true }),
+  ).toHaveAttribute("aria-current", "location");
+  await expect
+    .poll(() =>
+      page
+        .locator("[data-reading-progress]")
+        .evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).a),
+    )
+    .toBeGreaterThan(0.8);
+  await page.getByRole("link", { name: "Back to top", exact: true }).click();
+  await expect
+    .poll(() =>
+      page
+        .locator("[data-reading-progress]")
+        .evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).a),
+    )
+    .toBeLessThan(0.01);
+});
+
+for (const width of [375, 1440]) {
+  test(`every visible page link navigates and focuses its target at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    const links = await page
+      .locator('a[href^="#"]:visible:not(.skip-link)')
+      .all();
+    expect(links.length).toBeGreaterThan(4);
+    for (const link of links) {
+      const fragment = await link.getAttribute("href");
+      expect(fragment).toBeTruthy();
+      await link.click();
+      await expect(page).toHaveURL(new RegExp(`${fragment}$`));
+      await expect(page.locator(fragment!)).toBeFocused();
+    }
+  });
+}
+
+test("every mobile menu link works and closes the menu", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "モバイルナビゲーション" });
+  for (const label of ["About", "Experience", "Perspective", "Contact"]) {
+    await page.getByRole("button", { name: "メニューを開く" }).click();
+    const link = nav.getByRole("link", { name: label, exact: true });
+    const target = await link.getAttribute("href");
+    await link.click();
+    await expect(nav).toBeHidden();
+    await expect(page.locator(target!)).toBeFocused();
+  }
+});
+
+test("menu closes with toggle, outside click, logo and desktop resize", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "モバイルナビゲーション" });
+  const open = () =>
+    page.getByRole("button", { name: "メニューを開く" }).click();
+  await open();
+  await page.getByRole("button", { name: "メニューを閉じる" }).click();
+  await expect(nav).toBeHidden();
+  await open();
+  await page
+    .locator("header")
+    .getByRole("link", { name: "Yuka トップへ" })
+    .click();
+  await expect(nav).toBeHidden();
+  await open();
+  await page.mouse.click(10, 750);
+  await expect(nav).toBeHidden();
+  await open();
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(nav).toBeHidden();
+  await page.setViewportSize({ width: 375, height: 812 });
+  await expect(
+    page.getByRole("button", { name: "メニューを開く" }),
+  ).toHaveAttribute("aria-expanded", "false");
+});
+
+test("all theme buttons have persistent panels and mobile arrow controls", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  await expect(page.getByRole("tablist")).toHaveAttribute(
+    "aria-orientation",
+    "vertical",
+  );
+  const tabs = page.getByRole("tab");
+  for (let index = 0; index < 3; index++) {
+    const tab = tabs.nth(index);
+    await tab.click();
+    await expect(tab).toHaveAttribute("aria-selected", "true");
+    const panelId = await tab.getAttribute("aria-controls");
+    await expect(page.locator(`#${panelId}`)).toBeVisible();
+    await expect(page.getByRole("tabpanel")).toHaveCount(1);
+    await expect(page.locator('[role="tabpanel"]')).toHaveCount(3);
+  }
+  await tabs.nth(2).press("ArrowDown");
+  await expect(tabs.nth(0)).toBeFocused();
+  await tabs.nth(0).press("ArrowUp");
+  await expect(tabs.nth(2)).toBeFocused();
+  await tabs.nth(2).press("Home");
+  await expect(tabs.nth(0)).toBeFocused();
+  await tabs.nth(0).press("End");
+  await expect(tabs.nth(2)).toBeFocused();
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(page.getByRole("tablist")).toHaveAttribute(
+    "aria-orientation",
+    "horizontal",
+  );
+});
+
+test("every FAQ opens and closes with pointer and keyboard", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  for (const details of await page.locator("details").all()) {
+    const summary = details.locator("summary");
+    await summary.click();
+    await expect(details).toHaveAttribute("open", "");
+    await expect(details.locator("p")).toBeVisible();
+    await summary.press("Enter");
+    await expect(details).not.toHaveAttribute("open");
+    await summary.press("Space");
+    await expect(details).toHaveAttribute("open", "");
+    await summary.click();
+    await expect(details).not.toHaveAttribute("open");
+  }
+});
+
+test("404 recovery link returns to the working profile", async ({ page }) => {
+  await page.goto("/404.html");
+  await expect(
+    page.getByRole("heading", { name: "ページが見つかりません。" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Yukaのプロフィールへ戻る" }).click();
+  await expect(page).toHaveURL("http://127.0.0.1:3000/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "人の可能性を",
+  );
+});
